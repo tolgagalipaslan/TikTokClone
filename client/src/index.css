@@ -1,0 +1,22 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+.posts::-webkit-scrollbar {
+    background-color: transparent;
+    width: 0px;
+   }
+
+   .mainSideBar::-webkit-scrollbar-thumb {
+    background: #353536;
+    border-radius: 10px;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    -ms-border-radius: 10px;
+    -o-border-radius: 10px;
+}
+.mainSideBar::-webkit-scrollbar {
+    background-color: transparent;
+    width: 5px;
+   }

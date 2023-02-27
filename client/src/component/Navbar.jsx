@@ -1,7 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { SiTiktok } from "react-icons/si";
 import { AiOutlineSearch, AiOutlinePlus } from "react-icons/ai";
+import { GoogleLogin, googleLogout } from "@react-oauth/google";
 const Navbar = () => {
+  const user = false;
+  // button icin usestate
+  const [authBtn, setAuthBtn] = useState(false);
   return (
     <div className="flex   justify-between  items-center h-[8vh]    ">
       <div className="flex items-center text-3xl text-white">
@@ -26,9 +30,45 @@ const Navbar = () => {
         <button className="bg-[#252525] px-4 py-2 rounded items-center flex gap-2 hover:bg-[#474747]">
           <AiOutlinePlus /> Upload
         </button>
-        <button className="bg-[#252525] px-6 py-2 rounded items-center hover:bg-[#474747] text-mainRed">
-          Sign In{" "}
-        </button>
+        <div>
+          {
+            // Log In Buttonu user varsa
+
+            user ? (
+              <button className="bg-[#252525] px-6 py-2 rounded items-center hover:bg-[#474747] text-mainRed">
+                Logged In
+              </button>
+            ) : (
+              // Sing In Buttonu user yoksa
+              <button
+                onClick={() => setAuthBtn(authBtn ? false : true)}
+                className="bg-[#252525] px-6 py-2 rounded items-center hover:bg-[#474747] text-mainRed"
+              >
+                Sign In
+              </button>
+            )
+          }
+        </div>
+      </div>
+      {/* MODAL */}
+
+      <div
+        onClick={() => setAuthBtn(false)}
+        className={`${
+          authBtn ? "flex " : "hidden"
+        } fixed top-0 left-0 z-30 backdrop-blur-md w-screen bg-transparent h-screen items-center justify-center`}
+      >
+        <div className="bg-[#252525] py-10 p-5 rounded-lg">
+          <GoogleLogin
+            style={{ background: "red", width: 50, height: 50 }}
+            onSuccess={(credentialResponse) => {
+              console.log(credentialResponse);
+            }}
+            onError={() => {
+              console.log("Login Failed");
+            }}
+          />
+        </div>
       </div>
     </div>
   );

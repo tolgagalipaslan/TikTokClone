@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { SiTiktok } from "react-icons/si";
 import { AiOutlineSearch, AiOutlinePlus } from "react-icons/ai";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { GoogleLogin, googleLogout } from "@react-oauth/google";
 import { useDispatch, useSelector } from "react-redux";
 import { createOrGetUser, logout } from "../store/auth";
@@ -11,8 +11,13 @@ const Navbar = () => {
   const user = useSelector((state) => state.user.user);
   const dispatch = useDispatch();
   const [profileBtn, setProfileBtn] = useState(false);
-  const [mouseOutClick, setMouseOutClick] = useState(false);
-
+  const navigate = useNavigate();
+  // eger kullanici yoksa upload yapabilmesini engllemek icin
+  useEffect(() => {
+    if (!user.name) {
+      navigate("/");
+    }
+  }, [navigate, user]);
   // button icin usestate
   const [authBtn, setAuthBtn] = useState(false);
   return (
@@ -36,9 +41,21 @@ const Navbar = () => {
         </form>
       </div>
       <div className="text-white flex items-center  gap-2 ">
-        <button className="bg-[#252525] px-4 py-2 rounded items-center flex gap-2 hover:bg-[#474747]">
-          <AiOutlinePlus /> Upload
-        </button>
+        {user.name ? (
+          <Link
+            to="/upload"
+            className="bg-[#252525] px-4 py-2 rounded items-center flex gap-2 hover:bg-[#474747]"
+          >
+            <AiOutlinePlus /> Upload
+          </Link>
+        ) : (
+          <button
+            onClick={() => setAuthBtn(authBtn ? false : true)}
+            className="bg-[#252525] px-4 py-2 rounded items-center flex gap-2 hover:bg-[#474747]"
+          >
+            <AiOutlinePlus /> Upload
+          </button>
+        )}
 
         {/* LOGIN CHECK */}
         <div>
@@ -58,7 +75,7 @@ const Navbar = () => {
                   className={` group-hover:flex  group-hover:opacity-100  duration-500 hidden absolute -bottom-[100px] right-0 z-30   bg-[#252525] flex flex-col  w-[140px]  opacity-0 rounded `}
                 >
                   {/* OPTIONS */}
-                  <div className=" flex absolute  bottom-full  w-full justify-end pr-3 text-[#252525] right-0">
+                  <div className=" flex absolute  bottom-full  w-full justify-end pr-3 text-[#252525] right-0 pt-5">
                     <BsFillTriangleFill />
                   </div>
                   <Link

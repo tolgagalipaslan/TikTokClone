@@ -5,17 +5,29 @@ import { FaCloudUploadAlt } from "react-icons/fa";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { client } from "../../utils/client";
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { uid } from "uid";
+import axios from "axios";
 const Profile = () => {
   //upload video
   const [uploadVideo, setUploadVideo] = useState();
+  const [caption, setCaption] = useState("");
+  const [category, setCategory] = useState("action");
   const handleDiscard = () => {
     setUploadVideo();
+    setCaption("");
+    setCategory("action");
   };
   const [looding, setlooding] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const navigate = useNavigate();
 
+  const user = useSelector((state) => state.user.user);
   const uploadVideoHandle = async (e) => {
     setlooding(true);
     const selectedFile = e.target.files[0];
+    //Handle Post
 
     const fileTypes = ["video/mp4", "video/webm", "video/ogg"];
     if (fileTypes.includes(selectedFile.type)) {
@@ -29,12 +41,60 @@ const Profile = () => {
           setlooding(false);
         });
     } else {
-      falseFileType();
+      falseFileType("False Video Type");
       setlooding(false);
     }
   };
 
-  const falseFileType = () => toast.error("False Type of video");
+  //Handle Post
+  const handlePost = async (e) => {
+    e.preventDefault();
+    if (!uploadVideo || caption.trimStart() === "") {
+      falseFileType("Please fill in the form completely");
+    } else {
+      try {
+        setIsSubmitting(true);
+        await axios.post(
+          `https://${
+            import.meta.env.VITE_PROJECT_ID
+          }.api.sanity.io/v1/data/mutate/production`,
+          {
+            mutations: [
+              {
+                create: {
+                  _type: "post",
+                  userId: user?.sub,
+                  caption: caption,
+                  topic: category,
+                  videoId: uid(),
+                  comments: [],
+                  video: uploadVideo?.url,
+                  likes: [],
+                },
+              },
+            ],
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${import.meta.env.VITE_SANITY_TOKEN}`,
+            },
+          }
+        );
+        setUploadVideo();
+        setCaption("");
+        setCategory("action");
+        setIsSubmitting(false);
+        navigate(`/profile/${user?.sub}`);
+      } catch (error) {
+        console.log(error);
+        falseFileType("Failed to share post");
+        setIsSubmitting(false);
+      }
+    }
+  };
+  // TOSTIFY
+  const falseFileType = (message) => toast.error(message);
   return (
     <div className="bg-[#121212]  h-screen">
       <ToastContainer
@@ -61,8 +121,9 @@ const Profile = () => {
         {/* CONTENT */}
         {looding ? (
           <form className="p-5  flex  justify-between bg-white mx-auto my-auto w-1/2 rounded-lg gap-5 select-none ">
+            {/* LOADING */}
             <div className="h-[587px] w-[384px] rounded-lg  border-dashed border-[3px] border-gray-700  shadow-lg shadow-black flex  items-center justify-center bg-slate-300">
-              <div class="lds-roller">
+              <div className="lds-roller">
                 <div></div>
                 <div></div>
                 <div></div>
@@ -73,15 +134,17 @@ const Profile = () => {
                 <div></div>
               </div>
             </div>
+            {/* LOADING */}
             <div className="w-full flex flex-col gap-2  p-3 px-5 ">
               <h1 className="font-semibold text-2xl">Title</h1>
+              {/* TITLE INPUT */}
               <input
                 type="text"
                 placeholder="Title"
                 className=" p-3 px-5 rounded-full text-white  bg-slate-800  w-full outline-none "
               />
               <h1 className="font-semibold text-2xl">Choose Category</h1>
-
+              {/* CATEGORY SELECT INPUT */}
               <select
                 type="select"
                 className="p-3 px-5 rounded-md text-white  bg-slate-800  w-full outline-none"
@@ -107,7 +170,10 @@ const Profile = () => {
           </form>
         ) : null}
         {uploadVideo ? (
-          <form className="p-5  flex  justify-between bg-white mx-auto my-auto w-1/2 rounded-lg gap-5 ">
+          <form
+            onSubmit={handlePost}
+            className="p-5  flex  justify-between bg-white mx-auto my-auto w-1/2 rounded-lg gap-5 "
+          >
             <video
               className="h-[587px] w-[284px] rounded-lg  border-dashed border-[3px] border-gray-700  shadow-lg shadow-black"
               src={uploadVideo?.url}
@@ -116,6 +182,8 @@ const Profile = () => {
             <div className="w-full flex flex-col gap-2  p-3 px-5 ">
               <h1 className="font-semibold text-2xl">Title</h1>
               <input
+                onChange={(e) => setCaption(e.target.value)}
+                value={caption}
                 type="text"
                 placeholder="Title"
                 className=" p-3 px-5 rounded-full text-white  bg-slate-800  w-full outline-none "
@@ -123,6 +191,8 @@ const Profile = () => {
               <h1 className="font-semibold text-2xl">Choose Category</h1>
 
               <select
+                onChange={(e) => setCategory(e.target.value)}
+                value={category}
                 type="select"
                 className="p-3 px-5 rounded-md text-white  bg-slate-800  w-full outline-none"
               >

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { SiTiktok } from "react-icons/si";
 import { AiOutlineSearch, AiOutlinePlus } from "react-icons/ai";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { GoogleLogin, googleLogout } from "@react-oauth/google";
 import { useDispatch, useSelector } from "react-redux";
 import { createOrGetUser, logout } from "../store/auth";
@@ -13,11 +13,15 @@ const Navbar = () => {
   const [profileBtn, setProfileBtn] = useState(false);
   const navigate = useNavigate();
   // eger kullanici yoksa upload yapabilmesini engllemek icin
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const userValid = ["/upload"];
+  //LOCATION VALID
+  const location = useLocation();
   useEffect(() => {
-    if (!user.name) {
+    if (!user.name && userValid.includes(location.pathname)) {
       navigate("/");
     }
-  }, [navigate, user]);
+  }, [location.pathname, navigate, user, userValid]);
   // button icin usestate
   const [authBtn, setAuthBtn] = useState(false);
   return (
@@ -121,7 +125,7 @@ const Navbar = () => {
             style={{ background: "red", width: 50, height: 50 }}
             onSuccess={(credentialResponse) => {
               dispatch(createOrGetUser(credentialResponse));
-              setProfileBtn(false);
+              setAuthBtn(false);
             }}
             onError={() => {
               console.log("Login Failed");

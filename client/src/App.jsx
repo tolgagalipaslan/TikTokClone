@@ -7,13 +7,12 @@ import Upload from "./pages/Upload";
 
 const App = () => {
   const googleID = import.meta.env.VITE_GOOGLE_API;
-  console.log(googleID);
   return (
     <GoogleOAuthProvider clientId={googleID}>
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/profile/:name" element={<Profile />} />
+          <Route path="/profile/:id" element={<Profile />} />
           <Route path="/upload" element={<Upload />} />
         </Routes>
       </BrowserRouter>

@@ -1,12 +1,32 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Navbar from "../component/Navbar";
 import SideBar from "../component/SideBar";
 import { FaRegEdit, FaShare } from "react-icons/fa";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useParams } from "react-router-dom";
+import { client } from "../../utils/client";
+import { useSelector } from "react-redux";
 const Profile = () => {
   const params = useParams();
+  const user = useSelector((state) => state.user.user);
+
+  const [singleUser, setSingleUser] = useState({});
+
+  useEffect(() => {
+    getSingleUser();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [params.id]);
+  //GET USER
+  const getSingleUser = async () => {
+    try {
+      const query = `*[_type == "user" && _id == "${params.id}"][0]`;
+      const results = await client.fetch(query);
+      setSingleUser(results);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   //localhost degiscek
   const handleCopy = () => {
     navigator.clipboard.writeText(`http://localhost:5173/profile/${params.id}`);
@@ -39,22 +59,31 @@ const Profile = () => {
           <div className="flex text-white   gap-3 justify-between pt-5  w-fit ">
             <div>
               <img
-                src="https://images-ext-2.discordapp.net/external/dZdL3BPXc6tCb7FqBx4D58onzEfRTA_V0e39eNHOt9A/https/i.pinimg.com/originals/3a/d6/eb/3ad6eb0c16eebeab5bafa2804dd08b19.jpg?width=559&height=559"
+                src={singleUser?.picture}
                 alt=""
                 className="w-32 h-32 rounded-full"
               />
             </div>
             <div className="flex flex-col  justify-between">
               <div className="flex flex-col ">
-                <h1 className="text-3xl font-semibold">Tolga Aslan</h1>
+                <h1 className="text-3xl font-semibold">
+                  {singleUser?.userName}
+                </h1>
                 <h1 className="text-lg font-semibold opacity-80">
-                  Tolga Aslan
+                  {singleUser?.userName}
                 </h1>
               </div>
-              <button className="flex bg-[#252525] p-2 items-center justify-around rounded ">
-                {" "}
-                <FaRegEdit /> Edit Profile
-              </button>
+              {singleUser?.subId === user?.sub ? (
+                <button className="flex bg-[#252525] w-[150px] p-2 items-center justify-around rounded ">
+                  {" "}
+                  <FaRegEdit /> Edit Profile
+                </button>
+              ) : (
+                <button className="flex bg-mainRed w-[150px] p-2 items-center justify-around rounded  text-white">
+                  {" "}
+                  Follow
+                </button>
+              )}
             </div>
             <div className="w-40 flex justify-end font-semibold text-3xl">
               <FaShare
@@ -67,16 +96,25 @@ const Profile = () => {
           <div className="flex flex-col gap-3 text-white  ">
             <div className="flex gap-3 ">
               <h1 className="flex gap-2 items-center">
-                <span className="font-semibold text-lg"> 0</span>
+                <span className="font-semibold text-lg">
+                  {" "}
+                  {singleUser?.follows?.length}
+                </span>
                 Following
               </h1>
               <h1 className="flex gap-2 items-center">
-                <span className="font-semibold text-lg"> 0</span>
+                <span className="font-semibold text-lg">
+                  {" "}
+                  {singleUser?.followers?.length}
+                </span>
                 Followers
               </h1>
               <h1 className="flex gap-2 items-center">
-                <span className="font-semibold text-lg"> 0</span>
-                Videos
+                <span className="font-semibold text-lg">
+                  {" "}
+                  {singleUser?.likes?.length}
+                </span>
+                Likes
               </h1>
             </div>
             <div className="">

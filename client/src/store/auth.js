@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import jwt_decode from "jwt-decode";
-
+import axios from "axios"
 const hasUser =
   JSON.parse(localStorage.getItem("user")) === null
     ? {}
@@ -26,6 +26,33 @@ export const authSlice = createSlice({
         sub: decode.sub,
       };
       state.user = newUser;
+      axios.post(
+        `https://${
+          import.meta.env.VITE_PROJECT_ID
+        }.api.sanity.io/v1/data/mutate/production`,
+        {
+          mutations: [
+            {
+              createIfNotExists: {
+                _id: decode.sub,
+                _type: "user",
+                userName: decode.name,
+                picture: decode.picture,
+                subId: decode.sub,
+                follows: [],
+                followers: [],
+                likes: [],
+              },
+            },
+          ],
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${import.meta.env.VITE_SANITY_TOKEN}`,
+          },
+        }
+      );
       localStorage.setItem("user", JSON.stringify(newUser));
     },
   },

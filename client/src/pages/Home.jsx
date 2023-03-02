@@ -5,7 +5,6 @@ import Post from "../component/Post";
 import { useSelector } from "react-redux";
 const Home = () => {
   const user = useSelector((state) => state.user.user);
-  console.log(user);
   return (
     <div>
       <div className="bg-[#121212] h h-screen">

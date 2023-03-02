@@ -1,11 +1,28 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { AiFillHome } from "react-icons/ai";
 import { BsFillPeopleFill } from "react-icons/bs";
 import { FaVideo } from "react-icons/fa";
 import { GoVerified } from "react-icons/go";
-import { useLocation } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { Link, useLocation } from "react-router-dom";
+import { client } from "../../utils/client";
 const SideBar = () => {
+  const [users, setUsers] = useState([]);
   const location = useLocation();
+  const user = useSelector((state) => state.user.user);
+  useEffect(() => {
+    getUsers();
+  }, [user]);
+  //GET USERS
+  const getUsers = async () => {
+    try {
+      const query = `*[_type == "user"]`;
+      const results = await client.fetch(query);
+      setUsers(results);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <div
       className={`${
@@ -26,23 +43,25 @@ const SideBar = () => {
       <div className=" flex flex-col gap-2 text-white p-2">
         <h1 className="hidden md:flex">Suggested Accounts</h1>
         {/* Peoples */}
-        <div className="flex  items-center gap-2">
-          {/* image  */}
-          <img
-            src="https://i.pinimg.com/originals/3a/d6/eb/3ad6eb0c16eebeab5bafa2804dd08b19.jpg"
-            alt=""
-            className="w-10 h-10 rounded-full"
-          />
-          <div className="hidden md:flex flex-col">
-            {/* name tags */}
-            <div className="flex  items-center gap-2">
-              <h1>cznburak</h1>
-              <GoVerified className="text-[#58e0f1]" />
-            </div>
+        {users?.map((user, i) => (
+          <Link
+            to={`/profile/${user.subId}`}
+            key={i}
+            className="flex  items-center gap-2"
+          >
+            {/* image  */}
+            <img src={user.picture} alt="" className="w-10 h-10 rounded-full" />
+            <div className="hidden md:flex flex-col">
+              {/* name tags */}
+              <div className="flex  items-center gap-2">
+                <h1>{user.userName}</h1>
+                <GoVerified className="text-[#58e0f1]" />
+              </div>
 
-            <h1 className="text-sm text-gray-400">cznburak</h1>
-          </div>
-        </div>
+              <h1 className="text-sm text-gray-400">{user.userName}</h1>
+            </div>
+          </Link>
+        ))}
       </div>
     </div>
   );

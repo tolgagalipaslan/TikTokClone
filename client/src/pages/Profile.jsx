@@ -34,7 +34,7 @@ const Profile = () => {
   //GET Posts
   const getAllPosts = async () => {
     try {
-      const query = `*[_type == "post" && postedBy.userId =="${params.id}" ]`;
+      const query = `*[_type == "post" && userId =="${params.id}" ]`;
       const results = await client.fetch(query);
       setAllPosts(results);
       console.log(results);

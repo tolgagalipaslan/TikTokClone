@@ -12,26 +12,27 @@ export default {
       name: 'video',
       title: 'Video',
       type: 'string',
-      options: {
-        hotspot: true,
-      },
     },
     {
       name: 'videoId',
       title: 'Video Id',
       type: 'string',
     },
-
+    {
+      name: 'userId',
+      title: 'UserId',
+      type: 'string',
+    },
+    {
+      name: 'postedBy',
+      title: 'PostedBy',
+      type: 'postedBy',
+    },
     {
       name: 'likes',
       title: 'Likes',
       type: 'array',
-      of: [
-        {
-          type: 'reference',
-          to: [{type: 'user'}],
-        },
-      ],
+      of: [{type: 'user'}],
     },
     {
       name: 'comments',
@@ -43,28 +44,6 @@ export default {
       name: 'topic',
       title: 'Topic',
       type: 'string',
-    },
-    {
-      name: 'postedBy',
-      title: 'Posted By',
-      type: 'object',
-      fields: [
-        {
-          name:"userId",
-          title:"User Id",
-          type:"string"
-        },
-        {
-          name:"picture",
-          title:"Picture",
-          type:"string"
-        },
-        {
-          name:"userName",
-          title:"User Name",
-          type:"string"
-        },
-      ]
     },
   ],
 }

@@ -49,6 +49,8 @@ const Profile = () => {
   //Handle Post
   const handlePost = async (e) => {
     e.preventDefault();
+    const uniqueId = uid();
+
     if (!uploadVideo || caption.trimStart() === "") {
       falseFileType("Please fill in the form completely");
     } else {
@@ -62,15 +64,16 @@ const Profile = () => {
             mutations: [
               {
                 create: {
+                  _id: uniqueId,
                   _type: "post",
                   postedBy: {
-                    userId: user?.sub,
-                    picture: user?.picture,
-                    userName: user?.name,
+                    _type: "postedBy",
+                    _ref: user.sub,
                   },
+                  userId: user.sub,
                   caption: caption,
                   topic: category,
-                  videoId: uid(),
+                  videoId: uniqueId,
                   comments: [],
                   video: uploadVideo?.url,
                   likes: [],

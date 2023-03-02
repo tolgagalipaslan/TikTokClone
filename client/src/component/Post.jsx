@@ -4,15 +4,44 @@ import { GoVerified } from "react-icons/go";
 import { BsFillChatDotsFill, BsSuitHeartFill } from "react-icons/bs";
 import { IoMdShareAlt } from "react-icons/io";
 import { useSelector } from "react-redux";
+import axios from "axios";
+import { client } from "../../utils/client";
 const Post = ({ post, allUsers }) => {
   const user = useSelector((state) => state.user.user);
+  const postedByUser = allUsers?.filter((i) => i.subId === post.postedBy._ref);
+  console.log(post);
+  //handleLike
+  const handleLike = async () => {
+    if (post.likes.find((i) => i.subId === user.sub)) {
+      const newList = await post.likes.filter((i) => i.subId !== user.sub);
+
+      try {
+        client.patch(post._id).set({ likes: newList }).commit();
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      const newUser = {
+        _key: user.sub,
+        userName: user.name,
+        picture: user.picture,
+        subId: user.sub,
+      };
+      const newList = await [...post.likes, newUser];
+      try {
+        client.patch(post._id).set({ likes: newList }).commit();
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
   return (
     <div className="flex-col flex gap-5 py-6 w-full border-b border-[#2b2a2b] ">
       {/* title */}
       <div className="flex justify-between gap-5 w-full ">
         <div className="flex gap-2 ">
           <img
-            src={post?.postedBy.picture}
+            src={postedByUser[0]?.picture}
             alt=""
             className="w-14 h-14 rounded-full"
           />
@@ -20,18 +49,18 @@ const Post = ({ post, allUsers }) => {
             <div>
               {/* name tags */}
               <div className="flex items-center gap-2 text-white">
-                <h1>{post.postedBy.userName}</h1>
+                <h1>{postedByUser[0]?.userName}</h1>
                 <GoVerified className="text-[#58e0f1]" />
               </div>
 
               <h1 className="text-sm text-gray-400">
-                {post.postedBy.userName}
+                {postedByUser[0]?.userName}
               </h1>
             </div>
           </div>
         </div>
         <div>
-          {post?.postedBy.userId === user.sub ? null : (
+          {postedByUser[0]?.subId === user.sub ? null : (
             <button className="bg-[#252525] px-6 py-2 rounded items-center hover:bg-[#474747] text-mainRed border-mainRed border">
               Follow{" "}
             </button>
@@ -49,7 +78,10 @@ const Post = ({ post, allUsers }) => {
           className="min-h-[600px] w-[336px] bg-white rounded-md "
         ></video>
         <div className="flex flex-col items-center gap-2 text-gray-100">
-          <button className="bg-[#2f2f2f] p-4 rounded-full">
+          <button
+            onClick={handleLike}
+            className="bg-[#2f2f2f] p-4 rounded-full"
+          >
             <BsSuitHeartFill className="text-2xl" />
           </button>
           <div className="text-sm font-semibold text-white">

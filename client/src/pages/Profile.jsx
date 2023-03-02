@@ -7,13 +7,17 @@ import "react-toastify/dist/ReactToastify.css";
 import { useParams } from "react-router-dom";
 import { client } from "../../utils/client";
 import { useSelector } from "react-redux";
+import Videos from "../component/Videos";
 const Profile = () => {
   const params = useParams();
   const user = useSelector((state) => state.user.user);
 
   const [singleUser, setSingleUser] = useState({});
+  const [allPosts, setAllPosts] = useState([]);
 
   useEffect(() => {
+    getAllPosts();
+
     getSingleUser();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.id]);
@@ -23,6 +27,17 @@ const Profile = () => {
       const query = `*[_type == "user" && _id == "${params.id}"][0]`;
       const results = await client.fetch(query);
       setSingleUser(results);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  //GET Posts
+  const getAllPosts = async () => {
+    try {
+      const query = `*[_type == "post" && postedBy.userId =="${params.id}" ]`;
+      const results = await client.fetch(query);
+      setAllPosts(results);
+      console.log(results);
     } catch (error) {
       console.log(error);
     }
@@ -131,16 +146,11 @@ const Profile = () => {
               Videos
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-5 gap-5">
-              <div className="bg-white  h-[300px] rounded-lg   opacity-80  "></div>
-              <div className="bg-white h-[300px] rounded-lg  opacity-80 "></div>
-              <div className="bg-white h-[300px] rounded-lg  opacity-80 "></div>
-              <div className="bg-white h-[300px] rounded-lg  opacity-80 "></div>
-              <div className="bg-white h-[300px] rounded-lg  opacity-80 "></div>
-              <div className="bg-white h-[300px] rounded-lg  opacity-80"></div>
-              <div className="bg-white h-[300px] rounded-lg  opacity-80 "></div>
-              <div className="bg-white h-[300px] rounded-lg  opacity-80 "></div>
-              <div className="bg-white h-[300px] rounded-lg  opacity-80 "></div>
-              <div className="bg-white h-[300px] rounded-lg  opacity-80 "></div>
+              {allPosts?.map((post, i) => (
+                <div key={i}>
+                  <Videos post={post} />
+                </div>
+              ))}
             </div>
           </div>
 

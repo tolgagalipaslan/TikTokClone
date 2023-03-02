@@ -17,7 +17,7 @@ export const authSlice = createSlice({
     logout: (state) => {
       state.user = {};
       localStorage.removeItem("user");
-    },
+    },//googleauth
     createOrGetUser: (state, action) => {
       const decode = jwt_decode(action.payload.credential);
       const newUser = {
@@ -30,7 +30,7 @@ export const authSlice = createSlice({
         `https://${
           import.meta.env.VITE_PROJECT_ID
         }.api.sanity.io/v1/data/mutate/production`,
-        {
+        {//sanity add user  connection
           mutations: [
             {
               createIfNotExists: {

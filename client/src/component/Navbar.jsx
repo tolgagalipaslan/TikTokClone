@@ -83,7 +83,7 @@ const Navbar = () => {
                     <BsFillTriangleFill />
                   </div>
                   <Link
-                    to={`/profile/${user.name}`}
+                    to={`/profile/${user.sub}`}
                     className=" p-2 items-center gap-2   flex hover:bg-[#525151] rounded-t "
                   >
                     <BsPerson className="text-lg" /> Your Profile

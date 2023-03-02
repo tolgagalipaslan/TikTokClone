@@ -17,11 +17,6 @@ export default {
       },
     },
     {
-      name: 'userId',
-      title: 'UserId',
-      type: 'string',
-    },
-    {
       name: 'videoId',
       title: 'Video Id',
       type: 'string',
@@ -48,6 +43,28 @@ export default {
       name: 'topic',
       title: 'Topic',
       type: 'string',
+    },
+    {
+      name: 'postedBy',
+      title: 'Posted By',
+      type: 'object',
+      fields: [
+        {
+          name:"userId",
+          title:"User Id",
+          type:"string"
+        },
+        {
+          name:"picture",
+          title:"Picture",
+          type:"string"
+        },
+        {
+          name:"userName",
+          title:"User Name",
+          type:"string"
+        },
+      ]
     },
   ],
 }

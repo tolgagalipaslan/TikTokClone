@@ -1,10 +1,37 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Navbar from "../component/Navbar";
 import SideBar from "../component/SideBar";
 import Post from "../component/Post";
-import { useSelector } from "react-redux";
+import { client } from "../../utils/client";
 const Home = () => {
-  const user = useSelector((state) => state.user.user);
+  const [allPosts, setAllPosts] = useState([]);
+  const [allUsers, setAllUsers] = useState([]);
+
+  useEffect(() => {
+    getAllPosts();
+    getAllUsers();
+  }, []);
+  //GET Posts
+  const getAllPosts = async () => {
+    try {
+      const query = `*[_type == "post"]`;
+      const results = await client.fetch(query);
+      setAllPosts(results);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  //GET USER
+  const getAllUsers = async () => {
+    try {
+      const query = `*[_type == "user"]`;
+      const results = await client.fetch(query);
+      setAllUsers(results);
+      console.log(results);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <div>
       <div className="bg-[#121212] h h-screen">
@@ -16,10 +43,11 @@ const Home = () => {
         <div className="flex   max-w-[1150px]  mx-auto justify-between ">
           <SideBar />
           <div className="w-10/12  md:w-7/12 flex-col flex h-[91vh] overflow-y-auto pt-5  posts">
-            <Post />
-            <Post />
-            <Post />
-            <Post />
+            {allPosts?.map((post, i) => (
+              <div key={i}>
+                <Post post={post} allUsers={allUsers} />
+              </div>
+            ))}
           </div>
         </div>
       </div>

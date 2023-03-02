@@ -63,7 +63,11 @@ const Profile = () => {
               {
                 create: {
                   _type: "post",
-                  userId: user?.sub,
+                  postedBy: {
+                    userId: user?.sub,
+                    picture: user?.picture,
+                    userName: user?.name,
+                  },
                   caption: caption,
                   topic: category,
                   videoId: uid(),

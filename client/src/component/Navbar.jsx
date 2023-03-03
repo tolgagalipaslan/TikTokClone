@@ -7,10 +7,14 @@ import { useDispatch, useSelector } from "react-redux";
 import { createOrGetUser, logout } from "../store/auth";
 import { BsFillTriangleFill, BsPerson } from "react-icons/bs";
 import { BiLogIn } from "react-icons/bi";
+import { hide, toggle } from "../store/showAuth";
 const Navbar = () => {
   const user = useSelector((state) => state.user.user);
+  const showAuth = useSelector((state) => state.showAuth.showAuth);
   const dispatch = useDispatch();
+
   const [profileBtn, setProfileBtn] = useState(false);
+
   const navigate = useNavigate();
   // eger kullanici yoksa upload yapabilmesini engllemek icin
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -23,7 +27,7 @@ const Navbar = () => {
     }
   }, [location.pathname, navigate, user, userValid]);
   // button icin usestate
-  const [authBtn, setAuthBtn] = useState(false);
+
   return (
     <div className="flex   justify-between  items-center h-[8vh]    ">
       <Link to="/" className="flex items-center text-3xl text-white">
@@ -54,7 +58,7 @@ const Navbar = () => {
           </Link>
         ) : (
           <button
-            onClick={() => setAuthBtn(authBtn ? false : true)}
+            onClick={() => dispatch(toggle())}
             className="bg-[#252525] px-4 py-2 rounded items-center flex gap-2 hover:bg-[#474747]"
           >
             <AiOutlinePlus /> Upload
@@ -103,7 +107,7 @@ const Navbar = () => {
             ) : (
               // Sing In Buttonu user yoksa
               <button
-                onClick={() => setAuthBtn(authBtn ? false : true)}
+                onClick={() => dispatch(toggle())}
                 className="bg-[#252525] px-6 py-2 rounded items-center hover:bg-[#474747] text-mainRed"
               >
                 Sign In
@@ -115,9 +119,9 @@ const Navbar = () => {
       {/* MODAL */}
 
       <div
-        onClick={() => setAuthBtn(false)}
+        onClick={() => dispatch(hide())}
         className={`${
-          authBtn ? "flex " : "hidden"
+          showAuth ? "flex " : "hidden"
         } fixed top-0 left-0 z-30 backdrop-blur-md w-screen bg-transparent h-screen items-center justify-center`}
       >
         <div className="bg-[#252525] py-10 p-5 rounded-lg">
@@ -125,7 +129,7 @@ const Navbar = () => {
             style={{ background: "red", width: 50, height: 50 }}
             onSuccess={(credentialResponse) => {
               dispatch(createOrGetUser(credentialResponse));
-              setAuthBtn(false);
+              dispatch(hide());
             }}
             onError={() => {
               console.log("Login Failed");

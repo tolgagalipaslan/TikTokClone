@@ -1,10 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { client } from "../../utils/client";
+
+import PostVideo from "../component/post/PostVideo";
+import PostInfo from "../component/post/PostInfo";
 
 const PostDetails = () => {
   const params = useParams();
   const [post, setPost] = useState({});
+  const [postedByUser, setPostedByUser] = useState({});
 
   useEffect(() => {
     getSinglePost();
@@ -14,20 +18,29 @@ const PostDetails = () => {
     try {
       const query = `*[_type == "post" && _id == "${params.id}"]`;
       const results = await client.fetch(query);
+
       setPost(results[0]);
-      console.log(results[0]);
+      getPostedByUser(results[0].postedBy._ref);
     } catch (error) {
       console.log(error);
     }
   };
+
+  //Get PostedBy User
+  const getPostedByUser = async (user) => {
+    try {
+      const query = `*[_type == "user" && _id == "${user}"][0]`;
+      const results = await client.fetch(query);
+      setPostedByUser(results);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
-    <div className="w-full h-screen bg-black flex">
-      <div className="md:w-[70%]  w-full bg-mainRed  h-full">
-        <div>
-          <video src={post.video}></video>
-        </div>
-      </div>
-      <div className="w-[30%] md:flex hidden bg-white  h-full"></div>
+    <div className="w-full h-screen bg-black flex ">
+      <PostVideo post={post} />
+      <PostInfo postedByUser={postedByUser} post={post} />
     </div>
   );
 };

@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
-import Navbar from "../component/Navbar";
-import SideBar from "../component/SideBar";
+import Navbar from "@/component/Navbar";
+import SideBar from "@/component/SideBar";
 import { FaRegEdit, FaShare } from "react-icons/fa";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useParams } from "react-router-dom";
-import { client } from "../../utils/client";
+import { client } from "@/utils/client";
 import { useSelector } from "react-redux";
-import Videos from "../component/Videos";
+import Videos from "../postDetails/components/Videos";
 const Profile = () => {
   const params = useParams();
   const user = useSelector((state) => state.user.user);
@@ -37,7 +37,6 @@ const Profile = () => {
       const query = `*[_type == "post" && userId =="${params.id}" ]`;
       const results = await client.fetch(query);
       setAllPosts(results);
-      console.log(results);
     } catch (error) {
       console.log(error);
     }

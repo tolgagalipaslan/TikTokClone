@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import Navbar from "../component/Navbar";
-import SideBar from "../component/SideBar";
+import Navbar from "@/component/Navbar";
+import SideBar from "@/component/SideBar";
 import { FaCloudUploadAlt } from "react-icons/fa";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { client } from "../../utils/client";
+import { client } from "@/utils/client";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { uid } from "uid";

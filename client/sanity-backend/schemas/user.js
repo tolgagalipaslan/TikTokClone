@@ -30,8 +30,8 @@ export default {
         ],
       },
       {
-        name: 'follower',
-        title: 'Follower',
+        name: 'followers',
+        title: 'Followers',
         type: 'array',
         of: [
           {

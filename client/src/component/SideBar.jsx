@@ -5,7 +5,7 @@ import { FaVideo } from "react-icons/fa";
 import { GoVerified } from "react-icons/go";
 import { useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
-import { client } from "../../utils/client";
+import { client } from "@/utils/client";
 const SideBar = () => {
   const [users, setUsers] = useState([]);
   const location = useLocation();

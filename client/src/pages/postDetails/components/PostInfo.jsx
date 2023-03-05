@@ -4,11 +4,12 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { BsSuitHeartFill, BsFillChatDotsFill } from "react-icons/bs";
 import { FaShare } from "react-icons/fa";
-import { show } from "../../store/showAuth";
+import { show } from "@/store/showAuth";
 import { useParams } from "react-router-dom";
 import PostComment from "./PostComment";
 import { uid } from "uid";
-import { client } from "../../../utils/client";
+import { client } from "@/utils/client";
+import Follow from "../../../component/Follow";
 
 const PostInfo = ({ postedByUser, post }) => {
   const params = useParams();
@@ -20,25 +21,14 @@ const PostInfo = ({ postedByUser, post }) => {
 
   useEffect(() => {
     getCurrentComments();
-    currentLikes();
-  }, []);
+  }, [params.id]);
 
-  const currentLikes = async () => {
-    try {
-      const query = `*[_type=="post" && _id == "${post._id}"]`;
-      const results = await client.fetch(query);
-      setLikes(results[0].likes);
-      console.log(results[0].likes);
-    } catch (error) {
-      console.log(error);
-    }
-  };
   //handleLike
   const handleLike = async () => {
     if (!user.name) {
       dispatch(show());
-    } else if (likes.find((i) => i.subId === user.sub)) {
-      const newList = likes.filter((i) => i.subId !== user.sub);
+    } else if (likes?.find((i) => i.subId === user.sub)) {
+      const newList = likes?.filter((i) => i.subId !== user.sub);
 
       try {
         await client.patch(post._id).set({ likes: newList }).commit();
@@ -63,9 +53,10 @@ const PostInfo = ({ postedByUser, post }) => {
     }
   };
   const handleCopy = () => {
-    navigator.clipboard.writeText(`http://localhost:5173/profile/${params.id}`);
+    navigator.clipboard.writeText(`http://localhost:5173/post/${params.id}`);
     copyToastify();
   };
+  const copyToastify = () => toast.success("Link Copied");
   //Get Current Comment
   //Get Current comment
   const getCurrentComments = async () => {
@@ -102,7 +93,7 @@ const PostInfo = ({ postedByUser, post }) => {
       }
     }
   };
-  const copyToastify = () => toast.success("Link Copied");
+
   return (
     <div className="w-[30%] md:flex md:flex-col hidden bg-[#121212] h-full">
       <ToastContainer
@@ -142,11 +133,7 @@ const PostInfo = ({ postedByUser, post }) => {
           </div>
           {/* BUTTON  */}
           <div>
-            {postedByUser?.subId === user.sub ? null : (
-              <button className="bg-[#252525] px-6 py-2 rounded items-center hover:bg-[#474747] text-mainRed border-mainRed border">
-                Follow{" "}
-              </button>
-            )}
+            {postedByUser?.subId === user.sub ? null : <Follow post={post} />}
           </div>
         </div>
         {/* TOPIC */}
@@ -162,7 +149,7 @@ const PostInfo = ({ postedByUser, post }) => {
               <BsSuitHeartFill
                 onClick={handleLike}
                 className={`${
-                  likes.find((i) => i.subId === user.sub) ? "text-mainRed" : ""
+                  likes?.find((i) => i.subId === user.sub) ? "text-mainRed" : ""
                 } p-2 h-fit w-fit text-2xl  bg-[#2f2f2f] hover:bg-[#1f1f1f] rounded-full`}
               />
               <span className="font-semibold ">{likes?.length}</span>

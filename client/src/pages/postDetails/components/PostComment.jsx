@@ -1,7 +1,7 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import { AiOutlineCloseCircle } from "react-icons/ai";
-import { client } from "../../../utils/client";
+import { client } from "@/utils/client";
 
 const PostComment = ({
   comment,

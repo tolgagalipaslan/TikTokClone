@@ -4,9 +4,14 @@ import { GoVerified } from "react-icons/go";
 import { BsFillChatDotsFill, BsSuitHeartFill } from "react-icons/bs";
 import { IoMdShareAlt } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
-import { client } from "../../utils/client";
+import { client } from "@/utils/client";
 import { Link } from "react-router-dom";
-import { show } from "../store/showAuth";
+import { show } from "@/store/showAuth";
+
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import Follow from "./Follow";
+
 const Post = ({ post, allUsers }) => {
   const user = useSelector((state) => state.user.user);
   const postedByUser = allUsers?.filter((i) => i.subId === post.postedBy._ref);
@@ -54,8 +59,25 @@ const Post = ({ post, allUsers }) => {
       }
     }
   };
+  const handleCopy = () => {
+    navigator.clipboard.writeText(`http://localhost:5173/post/${post._id}`);
+    copyToastify();
+  };
+  const copyToastify = () => toast.success("Link Copied");
   return (
     <div className="flex-col flex gap-5 py-6 w-full border-b border-[#2b2a2b] ">
+      <ToastContainer
+        position="bottom-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
       {/* title */}
       <div className="flex justify-between gap-5 w-full ">
         <div className="flex gap-2 ">
@@ -79,11 +101,7 @@ const Post = ({ post, allUsers }) => {
           </div>
         </div>
         <div>
-          {postedByUser[0]?.subId === user.sub ? null : (
-            <button className="bg-[#252525] px-6 py-2 rounded items-center hover:bg-[#474747] text-mainRed border-mainRed border">
-              Follow{" "}
-            </button>
-          )}
+          {postedByUser[0]?.subId === user.sub ? null : <Follow post={post} />}
         </div>
       </div>
       <div className="ml-16 mr-24 text-gray-200">{post.caption}</div>
@@ -95,7 +113,7 @@ const Post = ({ post, allUsers }) => {
             autoPlay
             muted
             src={post.video}
-            className="min-h-[600px] w-[336px] bg-white rounded-md "
+            className="min-h-[58  0px] w-[336px] bg-white rounded-md "
           ></video>
         </Link>
         <div className="flex flex-col items-center gap-2 text-gray-100">
@@ -120,13 +138,19 @@ const Post = ({ post, allUsers }) => {
           <div className="text-sm font-semibold text-white">
             {likes?.length}
           </div>
-          <button className="bg-[#2f2f2f] p-4 rounded-full">
+          <Link
+            to={`/post/${post._id}`}
+            className="bg-[#2f2f2f] p-4 rounded-full"
+          >
             <BsFillChatDotsFill className="text-2xl" />
-          </button>
+          </Link>
           <div className="text-sm font-semibold text-white">
             {post.comments?.length}
           </div>
-          <button className="bg-[#2f2f2f] p-4 rounded-full">
+          <button
+            onClick={handleCopy}
+            className="bg-[#2f2f2f] p-4 rounded-full"
+          >
             <IoMdShareAlt className="text-2xl" />
           </button>
         </div>

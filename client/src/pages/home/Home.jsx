@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import Navbar from "../component/Navbar";
-import SideBar from "../component/SideBar";
-import Post from "../component/Post";
-import { client } from "../../utils/client";
+import Navbar from "@/component/Navbar";
+import SideBar from "@/component/SideBar";
+import Post from "@/component/Post";
+import { client } from "@/utils/client";
 const Home = () => {
   const [allPosts, setAllPosts] = useState([]);
   const [allUsers, setAllUsers] = useState([]);
@@ -12,9 +12,10 @@ const Home = () => {
     getAllUsers();
   }, []);
   //GET Posts
+  //Get All Posts
   const getAllPosts = async () => {
     try {
-      const query = `*[_type == "post"]`;
+      const query = `*[_type == "post"] | order(_createdAt desc)`;
       const results = await client.fetch(query);
       setAllPosts(results);
     } catch (error) {
@@ -27,7 +28,6 @@ const Home = () => {
       const query = `*[_type == "user"]`;
       const results = await client.fetch(query);
       setAllUsers(results);
-      console.log(results);
     } catch (error) {
       console.log(error);
     }

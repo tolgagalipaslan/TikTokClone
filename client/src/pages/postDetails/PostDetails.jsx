@@ -4,6 +4,7 @@ import { client } from "@/utils/client";
 
 import PostVideo from "./components/PostVideo";
 import PostInfo from "./components/PostInfo";
+import { getSinglePost } from "@/helpers/Api";
 
 const PostDetails = () => {
   const params = useParams();
@@ -11,20 +12,22 @@ const PostDetails = () => {
   const [postedByUser, setPostedByUser] = useState({});
   const [prevPostId, setPrevPostId] = useState("");
   const [nextPostId, setNextPostId] = useState("");
-  useEffect(() => {
-    getSinglePost();
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    getSinglePost(params.id).then((res) => {
+      setPost(res);
+      getPostedByUser(res.userId);
+      getPreviousPost(res);
+      getNextPost(res);
+    });
   }, [params.id]);
 
-  const getSinglePost = async () => {
+  //Get PostedBy User
+  const getPostedByUser = async (user) => {
     try {
-      const query = `*[_type == "post" && _id == "${params.id}"]`;
+      const query = `*[_type == "user" && _id == "${user}"][0]`;
       const results = await client.fetch(query);
-      setPost(results[0]);
-      getPreviousPost(results[0]);
-      getNextPost(results[0]);
-      getPostedByUser(results[0].postedBy._ref);
+      setPostedByUser(results);
     } catch (error) {
       console.log(error);
     }
@@ -47,17 +50,6 @@ const PostDetails = () => {
       const query = `*[_type == "post" && dateTime(_createdAt) < dateTime('${post._createdAt}')]| order(_createdAt desc)`;
       const results = await client.fetch(query);
       setNextPostId(results[0]?._id);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  //Get PostedBy User
-  const getPostedByUser = async (user) => {
-    try {
-      const query = `*[_type == "user" && _id == "${user}"][0]`;
-      const results = await client.fetch(query);
-      setPostedByUser(results);
     } catch (error) {
       console.log(error);
     }

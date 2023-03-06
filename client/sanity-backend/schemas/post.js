@@ -32,7 +32,12 @@ export default {
       name: 'likes',
       title: 'Likes',
       type: 'array',
-      of: [{type: 'user'}],
+      of: [
+        {
+          type: 'reference',
+          to: [{type: 'user'}],
+        },
+      ],
     },
     {
       name: 'comments',

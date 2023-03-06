@@ -1,64 +1,38 @@
 import React, { useEffect, useState } from "react";
-//icons
 import { GoVerified } from "react-icons/go";
 import { BsFillChatDotsFill, BsSuitHeartFill } from "react-icons/bs";
 import { IoMdShareAlt } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
-import { client } from "@/utils/client";
 import { Link } from "react-router-dom";
 import { show } from "@/store/showAuth";
-
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Follow from "./Follow";
+import {
+  likeOrUnlike,
+  getSinglePost,
+  followOrUnfollow,
+  getSingleUser,
+} from "@/helpers/Api";
 
 const Post = ({ post, allUsers }) => {
   const user = useSelector((state) => state.user.user);
   const postedByUser = allUsers?.filter((i) => i.subId === post.postedBy._ref);
   const [likes, setLikes] = useState([]);
-  const [authBtn, setAuthBtn] = useState(false);
+  const [followers, setFollowers] = useState([]);
   const dispatch = useDispatch();
 
   //handleLike
   useEffect(() => {
-    currentLikes();
-  }, []);
-  const currentLikes = async () => {
-    try {
-      const query = `*[_type=="post" && _id == "${post._id}"]`;
-      const results = await client.fetch(query);
-      setLikes(results[0].likes);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  //handleLike
-  const handleLike = async () => {
-    if (likes.find((i) => i.subId === user.sub)) {
-      const newList = likes.filter((i) => i.subId !== user.sub);
+    getSinglePost(post._id).then((res) => {
+      setLikes(res.likes);
+      getSingleUser(res.userId).then((res) => {
+        setFollowers(res.followers);
+      });
+    });
+  }, [post._id]);
 
-      try {
-        await client.patch(post._id).set({ likes: newList }).commit();
-        currentLikes();
-      } catch (error) {
-        console.log(error);
-      }
-    } else {
-      const newUser = {
-        _key: user.sub,
-        userName: user.name,
-        picture: user.picture,
-        subId: user.sub,
-      };
-      const newList = [...likes, newUser];
-      try {
-        await client.patch(post._id).set({ likes: newList }).commit();
-        currentLikes();
-      } catch (error) {
-        console.log(error);
-      }
-    }
-  };
+  //handleLike
+
   const handleCopy = () => {
     navigator.clipboard.writeText(`http://localhost:5173/post/${post._id}`);
     copyToastify();
@@ -101,7 +75,33 @@ const Post = ({ post, allUsers }) => {
           </div>
         </div>
         <div>
-          {postedByUser[0]?.subId === user.sub ? null : <Follow post={post} />}
+          {postedByUser[0]?.subId === user.sub ? null : (
+            <div>
+              {followers?.subId === user.sub ? null : followers?.find(
+                  (i) => i._key === user.sub
+                ) ? (
+                <button
+                  onClick={async () => {
+                    const res = await followOrUnfollow(post.userId, user);
+                    setFollowers(res);
+                  }}
+                  className="border-mainRed border p-1 px-2 w-full rounded-md  font-semibold text-mainRed hover:bg-[#FFF3F5] duration-300 "
+                >
+                  Unfollow
+                </button>
+              ) : (
+                <button
+                  onClick={async () => {
+                    const res = await followOrUnfollow(post.userId, user);
+                    setFollowers(res);
+                  }}
+                  className="border-mainRed border p-1 px-2 w-full rounded-md  font-semibold text-mainRed hover:bg-[#FFF3F5] duration-300 "
+                >
+                  Follow
+                </button>
+              )}
+            </div>
+          )}
         </div>
       </div>
       <div className="ml-16 mr-24 text-gray-200">{post.caption}</div>
@@ -119,9 +119,11 @@ const Post = ({ post, allUsers }) => {
         <div className="flex flex-col items-center gap-2 text-gray-100">
           {user.name ? (
             <button
-              onClick={handleLike}
+              onClick={() => {
+                likeOrUnlike(post._id, user).then((res) => setLikes(res));
+              }}
               className={`${
-                likes.find((i) => i.subId === user.sub) ? "text-mainRed" : ""
+                likes?.find((i) => i._key === user.sub) ? "text-mainRed" : ""
               } bg-[#2f2f2f] p-4 rounded-full hover:text-mainRed duration-300`}
             >
               <BsSuitHeartFill className="text-2xl" />

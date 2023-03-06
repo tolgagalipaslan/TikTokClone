@@ -3,35 +3,16 @@ import Navbar from "@/component/Navbar";
 import SideBar from "@/component/SideBar";
 import Post from "@/component/Post";
 import { client } from "@/utils/client";
+import { getAllPosts, getAllUsers } from "@/helpers/Api";
 const Home = () => {
   const [allPosts, setAllPosts] = useState([]);
   const [allUsers, setAllUsers] = useState([]);
 
   useEffect(() => {
-    getAllPosts();
-    getAllUsers();
+    getAllPosts().then((res) => setAllPosts(res));
+    getAllUsers().then((res) => setAllUsers(res));
   }, []);
-  //GET Posts
-  //Get All Posts
-  const getAllPosts = async () => {
-    try {
-      const query = `*[_type == "post"] | order(_createdAt desc)`;
-      const results = await client.fetch(query);
-      setAllPosts(results);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  //GET USER
-  const getAllUsers = async () => {
-    try {
-      const query = `*[_type == "user"]`;
-      const results = await client.fetch(query);
-      setAllUsers(results);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+
   return (
     <div>
       <div className="bg-[#121212] h h-screen">

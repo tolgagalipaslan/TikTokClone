@@ -7,93 +7,39 @@ import { FaShare } from "react-icons/fa";
 import { show } from "@/store/showAuth";
 import { useParams } from "react-router-dom";
 import PostComment from "./PostComment";
-import { uid } from "uid";
-import { client } from "@/utils/client";
-import Follow from "../../../component/Follow";
+import {
+  leaveAComment,
+  likeOrUnlike,
+  getSinglePost,
+  followOrUnfollow,
+  getSingleUser,
+} from "@/helpers/Api";
 
 const PostInfo = ({ postedByUser, post }) => {
   const params = useParams();
   const [newComment, setNewComments] = useState("");
+  const [followers, setFollowers] = useState([]);
   const [currentComments, setCurrentComments] = useState();
   const [likes, setLikes] = useState([]);
   const user = useSelector((state) => state.user.user);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    getCurrentComments();
+    getSinglePost(params.id).then((res) => {
+      setLikes(res.likes);
+      setCurrentComments(res.comments);
+      getSingleUser(res.userId).then((res) => {
+        setFollowers(res.followers);
+      });
+    });
   }, [params.id]);
 
-  //handleLike
-  const handleLike = async () => {
-    if (!user.name) {
-      dispatch(show());
-    } else if (likes?.find((i) => i.subId === user.sub)) {
-      const newList = likes?.filter((i) => i.subId !== user.sub);
-
-      try {
-        await client.patch(post._id).set({ likes: newList }).commit();
-        getCurrentComments();
-      } catch (error) {
-        console.log(error);
-      }
-    } else {
-      const newUser = {
-        _key: user.sub,
-        userName: user.name,
-        picture: user.picture,
-        subId: user.sub,
-      };
-      const newList = [...likes, newUser];
-      try {
-        await client.patch(post._id).set({ likes: newList }).commit();
-        getCurrentComments();
-      } catch (error) {
-        console.log(error);
-      }
-    }
-  };
   const handleCopy = () => {
     navigator.clipboard.writeText(`http://localhost:5173/post/${params.id}`);
     copyToastify();
   };
   const copyToastify = () => toast.success("Link Copied");
-  //Get Current Comment
-  //Get Current comment
-  const getCurrentComments = async () => {
-    try {
-      const query = `*[_type == "post" && _id == "${params.id}"][0]`;
-      const results = await client.fetch(query);
-      setCurrentComments(results.comments);
-      setLikes(results.likes);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  const leaveCommentHandle = async (e) => {
-    e.preventDefault();
-    if (newComment.trimStart() === "") {
-      setNewComments("");
-    } else {
-      try {
-        const newList = [
-          ...currentComments,
-          {
-            _key: uid(),
-            userName: user?.name,
-            picture: user?.picture,
-            comment: newComment,
-            userId: user?.sub,
-          },
-        ];
-        await client.patch(post._id).set({ comments: newList }).commit();
-        setNewComments("");
-        getCurrentComments();
-      } catch (error) {
-        console.log(error);
-      }
-    }
-  };
-
+  console.log(postedByUser.subId);
   return (
     <div className="w-[30%] md:flex md:flex-col hidden bg-[#121212] h-full">
       <ToastContainer
@@ -133,7 +79,33 @@ const PostInfo = ({ postedByUser, post }) => {
           </div>
           {/* BUTTON  */}
           <div>
-            {postedByUser?.subId === user.sub ? null : <Follow post={post} />}
+            {postedByUser?.subId === user.sub ? null : (
+              <div>
+                {followers?.subId === user.sub ? null : followers?.find(
+                    (i) => i._key === user.sub
+                  ) ? (
+                  <button
+                    onClick={async () => {
+                      const res = await followOrUnfollow(post.userId, user);
+                      setFollowers(res);
+                    }}
+                    className="border-mainRed border p-1 px-2 w-full rounded-md  font-semibold text-mainRed hover:bg-[#FFF3F5] duration-300 "
+                  >
+                    Unfollow
+                  </button>
+                ) : (
+                  <button
+                    onClick={async () => {
+                      const res = await followOrUnfollow(post.userId, user);
+                      setFollowers(res);
+                    }}
+                    className="border-mainRed border p-1 px-2 w-full rounded-md  font-semibold text-mainRed hover:bg-[#FFF3F5] duration-300 "
+                  >
+                    Follow
+                  </button>
+                )}
+              </div>
+            )}
           </div>
         </div>
         {/* TOPIC */}
@@ -147,9 +119,11 @@ const PostInfo = ({ postedByUser, post }) => {
           <div className="flex gap-2 justify-between w-3/12 ">
             <div className="flex items-center gap-2">
               <BsSuitHeartFill
-                onClick={handleLike}
+                onClick={() =>
+                  likeOrUnlike(post._id, user).then((res) => setLikes(res))
+                }
                 className={`${
-                  likes?.find((i) => i.subId === user.sub) ? "text-mainRed" : ""
+                  likes?.find((i) => i._key === user.sub) ? "text-mainRed" : ""
                 } p-2 h-fit w-fit text-2xl  bg-[#2f2f2f] hover:bg-[#1f1f1f] rounded-full`}
               />
               <span className="font-semibold ">{likes?.length}</span>
@@ -170,8 +144,7 @@ const PostInfo = ({ postedByUser, post }) => {
       <div className="w-full h-full flex p-5 flex-col-reverse justify-end items-center gap-4 overflow-y-auto mainSideBar border-b border-[#2f2f2f] ">
         {currentComments?.map((comment, i) => (
           <PostComment
-            getCurrentComments={getCurrentComments}
-            currentComments={currentComments}
+            setCurrentComments={setCurrentComments}
             post={post}
             key={i}
             comment={comment}
@@ -182,7 +155,16 @@ const PostInfo = ({ postedByUser, post }) => {
       <div className="h-[120px] px-8 flex justify-center">
         {user.name ? (
           <div className="w-full flex justify-center py-5 ">
-            <form onSubmit={leaveCommentHandle} className="w-full ">
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                leaveAComment(post._id, user, newComment).then((res) => {
+                  setCurrentComments(res);
+                  setNewComments("");
+                });
+              }}
+              className="w-full "
+            >
               <input
                 type="text"
                 value={newComment}

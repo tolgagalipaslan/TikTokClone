@@ -20,7 +20,6 @@ const PostVideo = ({ post, nextPostId, prevPostId }) => {
       setShowPlayBtn(false);
     }
   };
-  console.log("sa");
   return (
     <div className="md:w-[70%]  w-full   relative   h-full flex overflow-x-hidden">
       <Link

@@ -1,36 +1,32 @@
 import React, { useEffect, useState } from "react";
 import Navbar from "@/component/Navbar";
 import SideBar from "@/component/SideBar";
-import { FaRegEdit, FaShare } from "react-icons/fa";
+import { FaShare } from "react-icons/fa";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useParams } from "react-router-dom";
 import { client } from "@/utils/client";
 import { useSelector } from "react-redux";
 import Videos from "../postDetails/components/Videos";
+import { getSingleUser, followOrUnfollow } from "@/helpers/Api";
 const Profile = () => {
   const params = useParams();
   const user = useSelector((state) => state.user.user);
-
+  const [followers, setFollowers] = useState();
   const [singleUser, setSingleUser] = useState({});
   const [allPosts, setAllPosts] = useState([]);
 
   useEffect(() => {
     getAllPosts();
 
-    getSingleUser();
+    getSingleUser(params.id).then((res) => {
+      setSingleUser(res);
+      setFollowers(res.followers);
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.id]);
   //GET USER
-  const getSingleUser = async () => {
-    try {
-      const query = `*[_type == "user" && _id == "${params.id}"][0]`;
-      const results = await client.fetch(query);
-      setSingleUser(results);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+
   //GET Posts
   const getAllPosts = async () => {
     try {
@@ -87,16 +83,38 @@ const Profile = () => {
                   {singleUser?.userName}
                 </h1>
               </div>
-              {singleUser?.subId === user?.sub ? (
-                <button className="flex bg-[#252525] w-[150px] p-2 items-center justify-around rounded ">
-                  {" "}
-                  <FaRegEdit /> Edit Profile
-                </button>
-              ) : (
-                <button className="flex bg-mainRed w-[150px] p-2 items-center justify-around rounded  text-white">
-                  {" "}
-                  Follow
-                </button>
+              {singleUser?.subId === user?.sub ? null : (
+                <div>
+                  {singleUser?.subId === user.sub ? null : followers?.find(
+                      (i) => i._key === user.sub
+                    ) ? (
+                    <button
+                      onClick={async () => {
+                        const res = await followOrUnfollow(
+                          singleUser.subId,
+                          user
+                        );
+                        setFollowers(res);
+                      }}
+                      className="border-mainRed border p-1 px-2 w-full rounded-md  font-semibold text-mainRed hover:bg-[#FFF3F5] duration-300 "
+                    >
+                      Unfollow
+                    </button>
+                  ) : (
+                    <button
+                      onClick={async () => {
+                        const res = await followOrUnfollow(
+                          singleUser.subId,
+                          user
+                        );
+                        setFollowers(res);
+                      }}
+                      className="border-mainRed border p-1 px-2 w-full rounded-md  font-semibold text-mainRed hover:bg-[#FFF3F5] duration-300 "
+                    >
+                      Follow
+                    </button>
+                  )}
+                </div>
               )}
             </div>
             <div className="w-40 flex justify-end font-semibold text-3xl">

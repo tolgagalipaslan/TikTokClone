@@ -5,24 +5,24 @@ import { FaVideo } from "react-icons/fa";
 import { GoVerified } from "react-icons/go";
 import { useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
-import { client } from "@/utils/client";
+import { getAllUsers } from "@/helpers/Api";
 const SideBar = () => {
   const [users, setUsers] = useState([]);
   const location = useLocation();
   const user = useSelector((state) => state.user.user);
   useEffect(() => {
-    getUsers();
+    getAllUsers().then((res) => setUsers(res));
   }, [user]);
-  //GET USERS
-  const getUsers = async () => {
-    try {
-      const query = `*[_type == "user"]`;
-      const results = await client.fetch(query);
-      setUsers(results);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  // //GET USERS
+  // const getUsers = async () => {
+  //   try {
+  //     const query = `*[_type == "user"]`;
+  //     const results = await client.fetch(query);
+  //     setUsers(results);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
   return (
     <div
       className={`${

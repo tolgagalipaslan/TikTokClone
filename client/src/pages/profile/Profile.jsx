@@ -4,11 +4,11 @@ import SideBar from "@/component/SideBar";
 import { FaShare } from "react-icons/fa";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useParams } from "react-router-dom";
-import { client } from "@/utils/client";
+import { Link, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
-import Videos from "../postDetails/components/Videos";
+import Videos from "@/component/Videos";
 import { getSingleUser, followOrUnfollow } from "@/helpers/Api";
+import { getMyPosts } from "@/helpers/Api";
 const Profile = () => {
   const params = useParams();
   const user = useSelector((state) => state.user.user);
@@ -17,26 +17,25 @@ const Profile = () => {
   const [allPosts, setAllPosts] = useState([]);
 
   useEffect(() => {
-    getAllPosts();
-
     getSingleUser(params.id).then((res) => {
       setSingleUser(res);
       setFollowers(res.followers);
+      getMyPosts(res._id).then((res) => setAllPosts(res));
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.id]);
   //GET USER
 
   //GET Posts
-  const getAllPosts = async () => {
-    try {
-      const query = `*[_type == "post" && userId =="${params.id}" ]`;
-      const results = await client.fetch(query);
-      setAllPosts(results);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  // const getAllPosts = async () => {
+  //   try {
+  //     const query = `*[_type == "post" && userId =="${params.id}" ]`;
+  //     const results = await client.fetch(query);
+  //     setAllPosts(results);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
   //localhost degiscek
   const handleCopy = () => {
     navigator.clipboard.writeText(`http://localhost:5173/profile/${params.id}`);
@@ -164,9 +163,9 @@ const Profile = () => {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-5 gap-5">
               {allPosts?.map((post, i) => (
-                <div key={i}>
+                <Link to={`/profilePostDetails/${post._id}`} key={i}>
                   <Videos post={post} />
-                </div>
+                </Link>
               ))}
             </div>
           </div>

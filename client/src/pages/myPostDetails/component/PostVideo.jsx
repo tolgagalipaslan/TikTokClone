@@ -22,7 +22,7 @@ const PostVideo = ({ post, nextPostId, prevPostId }) => {
   return (
     <div className="md:w-[70%]  w-full   relative   h-full flex overflow-x-hidden">
       <Link
-        to="/"
+        to={`/profile/${post._id}`}
         className="absolute  left-5 top-5 z-50 cursor-pointer text-3xl text-white rounded-full bg-[#505050] p-2 hover:bg-[#313030]"
       >
         <AiOutlineClose />
@@ -30,7 +30,7 @@ const PostVideo = ({ post, nextPostId, prevPostId }) => {
       <div className="flex flex-col gap-5 absolute right-5 z-50 top-1/2 -translate-y-1/2">
         {prevPostId !== undefined ? (
           <Link
-            to={`/post/${prevPostId}`}
+            to={`/profilePostDetails/${prevPostId}`}
             className="p-2 rounded-full bg-[#505050] text-lg cursor-pointer text-white hover:bg-[#313030]"
           >
             <AiOutlineUp className="text-3xl" />
@@ -45,7 +45,7 @@ const PostVideo = ({ post, nextPostId, prevPostId }) => {
         )}
         {nextPostId !== undefined ? (
           <Link
-            to={`/post/${nextPostId}`}
+            to={`/profilePostDetails/${nextPostId}`}
             className="p-2 rounded-full bg-[#505050] text-lg cursor-pointer text-white hover:bg-[#313030] "
           >
             <AiOutlineDown className="text-3xl" />

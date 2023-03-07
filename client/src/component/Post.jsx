@@ -55,11 +55,13 @@ const Post = ({ post, allUsers }) => {
       {/* title */}
       <div className="flex justify-between gap-5 w-full ">
         <div className="flex gap-2 ">
-          <img
-            src={postedByUser[0]?.picture}
-            alt=""
-            className="w-14 h-14 rounded-full"
-          />
+          <Link to={`/profile/${post.userId}`}>
+            <img
+              src={postedByUser[0]?.picture}
+              alt=""
+              className="w-14 h-14 rounded-full"
+            />
+          </Link>
           <div>
             <div>
               {/* name tags */}

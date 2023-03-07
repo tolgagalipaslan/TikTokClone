@@ -17,12 +17,12 @@ const PostVideo = ({ post, nextPostId, prevPostId }) => {
     } else {
       bgVideoRef?.current.play();
       setShowPlayBtn(false);
-    }
+    } //
   };
   return (
     <div className="md:w-[70%]  w-full   relative   h-full flex overflow-x-hidden">
       <Link
-        to={`/profile/${post._id}`}
+        to={`/profile/${post.userId}`}
         className="absolute  left-5 top-5 z-50 cursor-pointer text-3xl text-white rounded-full bg-[#505050] p-2 hover:bg-[#313030]"
       >
         <AiOutlineClose />

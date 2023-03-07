@@ -7,6 +7,8 @@ import { FaShare } from "react-icons/fa";
 import { show } from "@/store/showAuth";
 import { Link, useParams } from "react-router-dom";
 import PostComment from "./PostComment";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 import {
   leaveAComment,
   likeOrUnlike,
@@ -59,7 +61,11 @@ const PostInfo = ({ postedByUser, post }) => {
           <div className="flex gap-2 ">
             <Link to={`/profile/${post.userId}`}>
               <img
-                src={postedByUser?.picture}
+                src={
+                  postedByUser?.picture || (
+                    <Skeleton className="w-12 h-12 rounded-full animate-pulse" />
+                  )
+                }
                 alt=""
                 className="w-12 h-12 rounded-full"
               />
@@ -69,13 +75,19 @@ const PostInfo = ({ postedByUser, post }) => {
               <div>
                 {/* name tags */}
                 <div className="flex items-center gap-2 text-white">
-                  <h1>{postedByUser?.userName}</h1>
+                  <h1>
+                    {postedByUser?.userName || (
+                      <Skeleton className="w-32 animate-pulse " count={2} />
+                    )}
+                  </h1>
                   {/* <GoVerified className="text-[#58e0f1]" /> */}
                 </div>
 
                 <h1 className="text-sm text-gray-400">
-                  @{postedByUser?.userName} -{" "}
-                  {postedByUser?._updatedAt?.split("", 10)}
+                  @{postedByUser?.userName || <Skeleton className="w-full" />} -{" "}
+                  {postedByUser?._updatedAt?.split("", 10) || (
+                    <Skeleton className="w-32 " count={2} />
+                  )}
                 </h1>
               </div>
             </div>
@@ -113,10 +125,12 @@ const PostInfo = ({ postedByUser, post }) => {
         </div>
         {/* TOPIC */}
         <div className="ml-16 mr-24 text-gray-200 hover:underline font-semibold capitalize cursor-pointer">
-          #{post?.topic}
+          #{post?.topic || <Skeleton />}
         </div>
         {/* CAPTION */}
-        <div className="ml-16 mr-24 text-gray-200">{post?.caption}</div>
+        <div className="ml-16 mr-24 text-gray-200">
+          {post?.caption || <Skeleton />}
+        </div>
         {/* LIKES  COMMENT COUNT  && SHARE BUTTON*/}
         <div className="flex  justify-between p-6 text-white gap-2   ">
           <div className="flex gap-2 justify-between w-3/12 ">
@@ -129,12 +143,16 @@ const PostInfo = ({ postedByUser, post }) => {
                   likes?.find((i) => i._key === user.sub) ? "text-mainRed" : ""
                 } p-2 h-fit w-fit text-2xl  bg-[#2f2f2f] hover:bg-[#1f1f1f] rounded-full`}
               />
-              <span className="font-semibold ">{likes?.length}</span>
+              <span className="font-semibold ">
+                {likes?.length || <Skeleton />}
+              </span>
             </div>
             <div className="flex items-center gap-2">
               {" "}
               <BsFillChatDotsFill className="p-2 h-fit w-fit text-2xl  bg-[#2f2f2f] hover:bg-[#1f1f1f] rounded-full" />
-              <span className="font-semibold ">{currentComments?.length}</span>
+              <span className="font-semibold ">
+                {currentComments?.length || <Skeleton />}
+              </span>
             </div>
           </div>
           <FaShare

@@ -6,6 +6,8 @@ import { GoVerified } from "react-icons/go";
 import { useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
 import { getAllUsers } from "@/helpers/Api";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 const SideBar = () => {
   const [users, setUsers] = useState([]);
   const location = useLocation();
@@ -62,6 +64,22 @@ const SideBar = () => {
             </div>
           </Link>
         ))}
+        {users.length === 0
+          ? [1, 2, 3, 4, 5].map((i, key) => (
+              <div
+                key={key}
+                className="flex items-center gap-2 px-1 py-2 hover:bg-gray-100 duration-200 rounded-md cursor-pointer"
+              >
+                <div>
+                  <Skeleton className="w-10 h-10 rounded-full animate-pulse " />
+                </div>
+
+                <div className="md:flex flex-col hidden w-full ">
+                  <Skeleton className="w-24 h-2 animate-pulse" count={2} />
+                </div>
+              </div>
+            ))
+          : null}
       </div>
     </div>
   );

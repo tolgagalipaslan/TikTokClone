@@ -4,6 +4,8 @@ import SideBar from "@/component/SideBar";
 import Post from "@/component/Post";
 import { client } from "@/utils/client";
 import { getAllPosts, getAllUsers } from "@/helpers/Api";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 const Home = () => {
   const [allPosts, setAllPosts] = useState([]);
   const [allUsers, setAllUsers] = useState([]);
@@ -15,7 +17,7 @@ const Home = () => {
 
   return (
     <div>
-      <div className="bg-[#121212] h h-screen">
+      <div className="bg-[#121212]  h-screen">
         <div className="border-b border-[#2b2a2b]  h-[8vh] ">
           <div className="max-w-[1150px] h-screen mx-auto ">
             <Navbar />

@@ -7,6 +7,8 @@ import { Link } from "react-router-dom";
 import { show } from "@/store/showAuth";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 import {
   likeOrUnlike,
   getSinglePost,
@@ -59,7 +61,7 @@ const Post = ({ post, allUsers }) => {
             <img
               src={postedByUser[0]?.picture}
               alt=""
-              className="w-14 h-14 rounded-full"
+              className="w-14 h-14 rounded-full bg-gray-600"
             />
           </Link>
           <div>
@@ -115,7 +117,7 @@ const Post = ({ post, allUsers }) => {
             autoPlay
             muted
             src={post.video}
-            className="min-h-[58  0px] w-[336px] bg-white rounded-md "
+            className="min-h-[580px] w-[336px] bg-gray-700  rounded-md "
           ></video>
         </Link>
         <div className="flex flex-col items-center gap-2 text-gray-100">

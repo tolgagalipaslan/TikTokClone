@@ -61,13 +61,9 @@ const PostInfo = ({ postedByUser, post }) => {
           <div className="flex gap-2 ">
             <Link to={`/profile/${post.userId}`}>
               <img
-                src={
-                  postedByUser?.picture || (
-                    <Skeleton className="w-12 h-12 rounded-full animate-pulse" />
-                  )
-                }
+                src={postedByUser?.picture}
                 alt=""
-                className="w-12 h-12 rounded-full"
+                className="w-12 h-12 rounded-full bg-gray-600 "
               />
             </Link>
 
@@ -77,16 +73,20 @@ const PostInfo = ({ postedByUser, post }) => {
                 <div className="flex items-center gap-2 text-white">
                   <h1>
                     {postedByUser?.userName || (
-                      <Skeleton className="w-32 animate-pulse " count={2} />
+                      <Skeleton className="w-32 animate-pulse " />
                     )}
                   </h1>
                   {/* <GoVerified className="text-[#58e0f1]" /> */}
                 </div>
 
                 <h1 className="text-sm text-gray-400">
-                  @{postedByUser?.userName || <Skeleton className="w-full" />} -{" "}
+                  @
+                  {postedByUser?.userName || (
+                    <Skeleton className="w-32 animate-pulse " />
+                  )}{" "}
+                  -{" "}
                   {postedByUser?._updatedAt?.split("", 10) || (
-                    <Skeleton className="w-32 " count={2} />
+                    <Skeleton className="w-32 " count={1} />
                   )}
                 </h1>
               </div>

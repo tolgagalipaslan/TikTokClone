@@ -9,6 +9,8 @@ import { useSelector } from "react-redux";
 import Videos from "@/component/Videos";
 import { getSingleUser, followOrUnfollow } from "@/helpers/Api";
 import { getMyPosts } from "@/helpers/Api";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 const Profile = () => {
   const params = useParams();
   const user = useSelector((state) => state.user.user);
@@ -70,16 +72,16 @@ const Profile = () => {
               <img
                 src={singleUser?.picture}
                 alt=""
-                className="w-32 h-32 rounded-full"
+                className="w-32 h-32 rounded-full bg-gray-600"
               />
             </div>
             <div className="flex flex-col  justify-between">
               <div className="flex flex-col ">
                 <h1 className="text-3xl font-semibold">
-                  {singleUser?.userName}
+                  {singleUser?.userName || <Skeleton className="w-32" />}
                 </h1>
                 <h1 className="text-lg font-semibold opacity-80">
-                  {singleUser?.userName}
+                  {singleUser?.userName || <Skeleton className="w-32" />}
                 </h1>
               </div>
               {singleUser?.subId === user?.sub ? null : (

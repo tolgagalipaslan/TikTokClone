@@ -14,6 +14,8 @@ import {
   followOrUnfollow,
   getSingleUser,
 } from "@/helpers/Api";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 const PostInfo = ({ postedByUser, post }) => {
   const params = useParams();
@@ -61,7 +63,7 @@ const PostInfo = ({ postedByUser, post }) => {
               <img
                 src={postedByUser?.picture}
                 alt=""
-                className="w-12 h-12 rounded-full"
+                className="w-12 h-12 rounded-full bg-gray-600"
               />
             </Link>
 
@@ -74,8 +76,14 @@ const PostInfo = ({ postedByUser, post }) => {
                 </div>
 
                 <h1 className="text-sm text-gray-400">
-                  @{postedByUser?.userName} -{" "}
-                  {postedByUser?._updatedAt?.split("", 10)}
+                  @
+                  {postedByUser?.userName || (
+                    <Skeleton className="w-32 animate-pulse " />
+                  )}{" "}
+                  -{" "}
+                  {postedByUser?._updatedAt?.split("", 10) || (
+                    <Skeleton className="w-32 animate-pulse " />
+                  )}
                 </h1>
               </div>
             </div>
@@ -113,10 +121,12 @@ const PostInfo = ({ postedByUser, post }) => {
         </div>
         {/* TOPIC */}
         <div className="ml-16 mr-24 text-gray-200 hover:underline font-semibold capitalize cursor-pointer">
-          #{post?.topic}
+          #{post?.topic || <Skeleton className="w-32 animate-pulse " />}
         </div>
         {/* CAPTION */}
-        <div className="ml-16 mr-24 text-gray-200">{post?.caption}</div>
+        <div className="ml-16 mr-24 text-gray-200">
+          {post?.caption || <Skeleton className="w-32 animate-pulse " />}
+        </div>
         {/* LIKES  COMMENT COUNT  && SHARE BUTTON*/}
         <div className="flex  justify-between p-6 text-white gap-2   ">
           <div className="flex gap-2 justify-between w-3/12 ">

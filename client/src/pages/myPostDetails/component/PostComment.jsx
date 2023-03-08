@@ -8,17 +8,6 @@ import { Link } from "react-router-dom";
 const PostComment = ({ comment, setCurrentComments, post }) => {
   const user = useSelector((state) => state.user.user);
 
-  //delete comment
-  // const deleteHandleComment = async () => {
-  //   try {
-  //     const newList = currentComments.filter((i) => i._key !== comment._key);
-
-  //     await client.patch(post._id).set({ comments: newList }).commit();
-  //     getCurrentComments();
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
   return (
     <div className="flex gap-2 w-11/12 mx-auto p-3  border-b border-[#2f2f2f] relative  group">
       <div className="w-12 h-12 rounded-full flex">
